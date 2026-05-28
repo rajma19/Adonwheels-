@@ -3,54 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
+  <title>AdOnWheels | Login & Register</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body style="font-family: sans-serif; padding: 20px; max-width: 400px; margin: auto; background: #f9f9f9;">
+<body style="font-family: sans-serif; background: #f1f1f1; padding: 20px;">
 
-  <h2 style="text-align: center;">🔐 Login to Your Account</h2>
+<div class="card" style="max-width: 400px; margin: 50px auto; padding: 30px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center;">
+  
+  <!-- LOGO / HEADER -->
+  <h2 style="font-size: 28px; margin-bottom: 20px;">🚗 AdOnWheels</h2>
 
-  <form id="loginForm" style="display: flex; flex-direction: column; gap: 12px;">
-    <label>Mobile Number:
-      <input type="tel" id="phone" required pattern="[0-9]{10}" maxlength="10">
-    </label>
+  <!-- LOGIN FORM -->
+  <div id="loginSection">
+    <h3 style="margin-bottom: 15px; color: #333;">🔐 Login to Your Account</h3>
+    <form id="loginForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+      <div>
+        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Mobile Number</label>
+        <input type="tel" id="phone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+      </div>
 
-    <label>Password:
-      <input type="password" id="password" required>
-    </label>
+      <div>
+        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Password</label>
+        <input type="password" id="password" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+      </div>
 
-    <button type="submit">Login</button>
-  </form>
-
-  <p id="status" style="color: red; text-align: center; margin-top: 10px;"></p>
-
-  <div style="text-align: center; margin-top: 20px;">
-    <a href="signup.html" style="display: inline-block; margin: 5px 0;">📝 Don’t have an account? Sign Up</a><br>
-    <a href="index.html" style="display: inline-block; margin: 5px 0;">🔙 Back to Home</a>
+      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px;">Login</button>
+    </form>
+    <p style="margin-top: 20px; font-size: 14px;">
+      Don’t have an account? <a href="#" onclick="toggleSections(false)" style="color: #007bff; text-decoration: none; font-weight: bold;">Sign Up</a>
+    </p>
   </div>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+  <!-- SIGNUP FORM (Hidden by default) -->
+  <div id="signupSection" style="display: none;">
+    <h3 style="margin-bottom: 15px; color: #333;">📝 Create New Account</h3>
+    <form id="signupForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+      <div>
+        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Full Name</label>
+        <input type="text" id="newName" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+      </div>
 
-      const phone = document.getElementById("phone").value.trim();
-      const password = document.getElementById("password").value.trim();
+      <div>
+        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Mobile Number</label>
+        <input type="tel" id="newPhone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+      </div>
 
-      let users = JSON.parse(localStorage.getItem("users")) || [];
+      <div>
+        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Create Password</label>
+        <input type="password" id="newPassword" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+      </div>
 
-      const matchedUser = users.find(user => user.phone === phone && user.password === password);
+      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; background-color: #28a745;">Register</button>
+    </form>
+    <p style="margin-top: 20px; font-size: 14px;">
+      Already have an account? <a href="#" onclick="toggleSections(true)" style="color: #007bff; text-decoration: none; font-weight: bold;">Login</a>
+    </p>
+  </div>
 
-      if (matchedUser) {
-        localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
-        document.getElementById("status").style.color = "green";
-        document.getElementById("status").innerText = "✅ Login successful!";
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1000);
-      } else {
-        document.getElementById("status").innerText = "❌ Invalid mobile number or password.";
-      }
-    });
-  </script>
+  <p id="status" style="color: red; font-weight: bold; margin-top: 15px; min-height: 20px;"></p>
+
+  <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+  <a href="index.html" style="color: #666; text-decoration: none; font-size: 14px;">🔙 Back to Home</a>
+</div>
+
+<script>
+  // Toggle between Login and Signup forms smoothly
+  function toggleSections(showLogin) {
+    document.getElementById("status").innerText = "";
+    if (showLogin) {
+      document.getElementById("loginSection").style.display = "block";
+      document.getElementById("signupSection").style.display = "none";
+    } else {
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("signupSection").style.display = "block";
+    }
+  }
+
+  // LOGIN PROCESS
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const status = document.getElementById("status");
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    const matchedUser = users.find(user => user.phone === phone && user.password === password);
+
+    if (matchedUser) {
+      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
+      status.style.color = "green";
+      status.innerText = "✅ Login successful!";
+      setTimeout(() => {
+        window.location.href = "marketplace.html"; // Login ke baad seedhe marketplace bhejenge
+      }, 1000);
+    } else {
+      status.style.color = "red";
+      status.innerText = "❌ Invalid mobile number or password.";
+    }
+  });
+
+  // SIGNUP PROCESS
+  document.getElementById("signupForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("newName").value.trim();
+    const phone = document.getElementById("newPhone").value.trim();
+    const password = document.getElementById("newPassword").value.trim();
+    const status = document.getElementById("status");
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // Check if user already exists
+    if (users.some(user => user.phone === phone)) {
+      status.style.color = "red";
+      status.innerText = "❌ This mobile number is already registered.";
+      return;
+    }
+
+    // Save new user
+    users.push({ name: name, phone: phone, password: password });
+    localStorage.setItem("users", JSON.stringify(users));
+
+    status.style.color = "green";
+    status.innerText = "✅ Registration successful! Please Login.";
+    
+    // Clear signup form fields
+    document.getElementById("signupForm").reset();
+    
+    // Switch to login form after 1.5 seconds
+    setTimeout(() => {
+      toggleSections(true);
+    }, 1500);
+  });
+</script>
+
 </body>
 </html>

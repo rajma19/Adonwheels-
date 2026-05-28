@@ -10,21 +10,19 @@
 
 <div class="card" style="max-width: 400px; margin: 40px auto; padding: 30px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;">
   
-  <!-- LOGO -->
   <h2 style="font-size: 28px; margin-bottom: 20px;">🚗 AdOnWheels</h2>
 
-  <!-- LOGIN SECTION -->
   <div id="loginSection">
     <h3 style="margin-bottom: 15px; color: #333;">🔐 Login to Your Account</h3>
     <form id="loginForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Mobile Number</label>
-        <input type="tel" id="phone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
+        <input type="tel" id="phone" required pattern="[0-9]{10}" maxlength="10" placeholder="e.g. 9876543210" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Password</label>
-        <input type="password" id="password" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
+        <input type="password" id="password" required placeholder="Enter your password" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
       <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Login</button>
@@ -32,11 +30,10 @@
     
     <div style="margin-top: 25px; font-size: 15px; color: #333; display: flex; align-items: center; justify-content: center; gap: 8px;">
       <span>Don’t have an account?</span>
-      <a href="#" onclick="toggleSections(false)" style="background-color: #007bff; color: white !important; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Sign Up</a>
+      <a href="#" onclick="toggleSections(false); return false;" style="background-color: #007bff; color: white !important; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Sign Up</a>
     </div>
   </div>
 
-  <!-- SIGNUP SECTION -->
   <div id="signupSection" style="display: none;">
     <h3 style="margin-bottom: 15px; color: #333;">📝 Create New Account</h3>
     <form id="signupForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
@@ -60,7 +57,7 @@
     
     <div style="margin-top: 25px; font-size: 15px; color: #333; display: flex; align-items: center; justify-content: center; gap: 8px;">
       <span>Already have an account?</span>
-      <a href="#" onclick="toggleSections(true)" style="background-color: #007bff; color: white !important; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Login</a>
+      <a href="#" onclick="toggleSections(true); return false;" style="background-color: #007bff; color: white !important; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Login</a>
     </div>
   </div>
 
@@ -83,12 +80,24 @@
     }
   }
 
-  // LOGIN
+  // LOGIN LOGIC
   document.getElementById("loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
     const phone = document.getElementById("phone").value.trim();
     const password = document.getElementById("password").value.trim();
     const status = document.getElementById("status");
+
+    // Master/Test Account Bypass Logic for Quick testing
+    if (phone === "9999999999" && password === "admin") {
+      const adminUser = { name: "Test Admin", phone: "9999999999" };
+      localStorage.setItem("loggedInUser", JSON.stringify(adminUser));
+      status.style.color = "green";
+      status.innerText = "✅ Login successful! Redirecting to Dashboard...";
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+      return;
+    }
 
     let users = JSON.parse(localStorage.getItem("users")) || [];
     const matchedUser = users.find(user => user.phone === phone && user.password === password);
@@ -96,9 +105,9 @@
     if (matchedUser) {
       localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
       status.style.color = "green";
-      status.innerText = "✅ Login successful!";
+      status.innerText = "✅ Login successful! Redirecting to Dashboard...";
       setTimeout(() => {
-        window.location.href = "marketplace.html";
+        window.location.href = "dashboard.html";
       }, 1000);
     } else {
       status.style.color = "red";
@@ -106,7 +115,7 @@
     }
   });
 
-  // SIGNUP
+  // SIGNUP LOGIC
   document.getElementById("signupForm").addEventListener("submit", function (e) {
     e.preventDefault();
     const name = document.getElementById("newName").value.trim();
@@ -116,7 +125,7 @@
 
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    if (users.some(user => user.phone === phone)) {
+    if (users.some(user => user.phone === phone) || phone === "9999999999") {
       status.style.color = "red";
       status.innerText = "❌ This mobile number is already registered.";
       return;
@@ -126,7 +135,7 @@
     localStorage.setItem("users", JSON.stringify(users));
 
     status.style.color = "green";
-    status.innerText = "✅ Registration successful! Please Login.";
+    status.innerText = "✅ Registration successful! Switching to Login...";
     
     document.getElementById("signupForm").reset();
     
@@ -138,4 +147,4 @@
 
 </body>
           </html>
-    
+          

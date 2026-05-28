@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Cars</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>🚘 My Registered Cars</h2>
+
+  <!-- Filter Section -->
+  <div style="margin-bottom: 20px; padding: 10px; background: #f2f2f2;">
+    <label>
+      🔍 City:
+      <input type="text" id="filterCity" placeholder="Enter city name">
+    </label>
+    &nbsp;&nbsp;
+    <label>
+      🛣️ Min KMs/day:
+      <input type="number" id="filterKm" placeholder="0" min="0">
+    </label>
+    <br><br>
+    <button onclick="applyFilter()">Apply Filter</button>
+    <button onclick="resetFilter()">Reset</button>
+  </div>
+
+  <!-- Car List -->
+  <div id="carList">
+    <p>Loading your cars...</p>
+  </div>
+
+  <br>
+  <a href="index.html">🔙 Back to Home</a><br><br>
+  <button onclick="logout()">🚪 Logout</button>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user) {
+      alert("Please log in.");
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      alert("Logged out successfully.");
+      window.location.href = "login.html";
+    }
+
+    function deleteCar(index) {
+      const allCars = JSON.parse(localStorage.getItem("cars")) || [];
+      const userCars = allCars.filter(car => car.ownerPhone === user.phone);
+
+      const carToDelete = userCars[index];
+      const realIndex = allCars.findIndex(
+        car => car.ownerPhone === user.phone && car.regno === carToDelete.regno
+      );
+
+      if (confirm("Delete this car?")) {
+        allCars.splice(realIndex, 1);
+        localStorage.setItem("cars", JSON.stringify(allCars));
+        location.reload();
+      }
+    }
+
+    function editCar(index) {
+      window.location.href = "register-car.html?edit=" + index;
+    }
+
+    function displayCars(filteredCars) {
+      const carList = document.getElementById("carList");
+      carList.innerHTML = "";
+
+      if (filteredCars.length === 0) {
+        carList.innerHTML = "<p>No matching cars found.</p>";
+        return;
+      }
+
+      filteredCars.forEach((car, index) => {
+        const div = document.createElement("div");
+        div.style.border = "1px solid #ccc";
+        div.style.padding = "10px";
+        div.style.margin = "10px 0";
+        div.style.borderRadius = "10px";
+        div.style.backgroundColor = "#fff";
+
+        div.innerHTML = `
+          <strong>Owner:</strong> ${car.owner}<br>
+          <strong>Model:</strong> ${car.model}<br>
+          <strong>Reg. No.:</strong> ${car.regno}<br>
+          <strong>KMs/day:</strong> ${car.kmPerDay}<br>
+          <strong>City:</strong> ${car.city}<br><br>
+          <img src="${car.image}" width="200"><br><br>
+          <button onclick="editCar(${index})">✏️ Edit</button>
+          <button onclick="deleteCar(${index})">🗑️ Delete</button>
+        `;
+
+        carList.appendChild(div);
+      });
+    }
+
+    function loadCars() {
+      const allCars = JSON.parse(localStorage.getItem("cars")) || [];
+      const userCars = allCars.filter(car => car.ownerPhone === user.phone);
+      displayCars(userCars);
+    }
+
+    function applyFilter() {
+      const allCars = JSON.parse(localStorage.getItem("cars")) || [];
+      const userCars = allCars.filter(car => car.ownerPhone === user.phone);
+
+      const cityInput = document.getElementById("filterCity").value.toLowerCase().trim();
+      const minKm = parseInt(document.getElementById("filterKm").value) || 0;
+
+      const filtered = userCars.filter(car => {
+        const matchesCity = car.city.toLowerCase().includes(cityInput);
+        const matchesKm = parseInt(car.kmPerDay) >= minKm;
+        return matchesCity && matchesKm;
+      });
+
+      displayCars(filtered);
+    }
+
+    function resetFilter() {
+      document.getElementById("filterCity").value = "";
+      document.getElementById("filterKm").value = "";
+      loadCars();
+    }
+
+    // Load cars on page load
+    document.addEventListener("DOMContentLoaded", loadCars);
+  </script>
+</body>
+</html>

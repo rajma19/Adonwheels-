@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AdOnWheels Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>🛠️ AdOnWheels Admin Dashboard</h2>
+
+<div style="padding:10px; background:#f4f4f4; border-bottom:1px solid #ddd; margin-bottom:20px;">
+  <a href="marketplace.html" style="text-decoration:none; font-weight:bold; color:#333;">🏠 Marketplace</a> |
+  <a href="view-cars.html" style="text-decoration:none; font-weight:bold; color:#333;">🚘 Manage Cars</a> |
+  <a href="profile.html" style="text-decoration:none; font-weight:bold; color:#333;">👤 Profile</a>
+</div>
+
+<div id="stats">Loading global metrics...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDk359LPnFT_Jh7i6LdL35rS5Gd7inuHc",
+  authDomain: "adonwheels-be097.firebaseapp.com",
+  projectId: "adonwheels-be097",
+  storageBucket: "adonwheels-be097.appspot.com",
+  messagingSenderId: "90516470834",
+  appId: "1:90516470834:web:5f7b5d769605199bd4d02b" // Unified uniform App ID
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* SECURITY WALL - Preventing unauthenticated dashboard snooping */
+const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+if (!user) {
+  alert("Access Denied: Admin privileges required.");
+  window.location.href = "login.html";
+}
+
+async function loadStats() {
+  const statsContainer = document.getElementById("stats");
+  
+  try {
+    // Fire off both database queries simultaneously to boost performance
+    const [bookingsSnap, carsSnap] = await Promise.all([
+      getDocs(collection(db, "bookings")),
+      getDocs(collection(db, "cars"))
+    ]);
+
+    // Calculate Supply Metrics
+    let totalCars = carsSnap.size; // Fast shortcut to get total items in a snapshot
+
+    // Calculate Campaign/Demand Metrics
+    let totalBookings = 0;
+    let pending = 0;
+    let approved = 0;
+    let rejected = 0;
+
+    bookingsSnap.forEach(doc => {
+      totalBookings++;
+      const data = doc.data();
+      
+      // Sanitizing checks in case status field is capitalized or missing
+      const currentStatus = data.status ? data.status.toLowerCase() : "pending";
+
+      if (currentStatus === "pending") pending++;
+      else if (currentStatus === "approved") approved++;
+      else if (currentStatus === "rejected") rejected++;
+    });
+
+    // Update UI with structured metric layouts
+    statsContainer.innerHTML = `
+      <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+        
+        <div class="card" style="flex: 1; min-width: 200px; border:1px solid #ccc; padding:15px; border-radius:5px;">
+          <h3>🚘 Fleet Strength</h3>
+          <p style="font-size: 24px; font-weight: bold; margin: 5px 0;">${totalCars}</p>
+          <p style="color:#666; font-size:12px;">Active commercial vehicles registered</p>
+        </div>
+
+        <div class="card" style="flex: 2; min-width: 250px; border:1px solid #ccc; padding:15px; border-radius:5px;">
+          <h3>📦 Campaign Bookings: ${totalBookings}</h3>
+          <hr style="border:0; border-top:1px solid #eee;">
+          <p>⏳ <strong>Pending Review:</strong> ${pending}</p>
+          <p>✅ <strong>Live/Approved:</strong> ${approved}</p>
+          <p>❌ <strong>Rejected/Closed:</strong> ${rejected}</p>
+        </div>
+
+      </div>
+    `;
+
+  } catch (error) {
+    statsContainer.innerHTML = `<p style="color:red;">Failed to compile system metrics: ${error.message}</p>`;
+  }
+}
+
+loadStats();
+</script>
+
+</body>
+</html>

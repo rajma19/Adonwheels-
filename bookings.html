@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bookings Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2> Bookings Operations Panel</h2>
+
+<!-- MANAGEMENT NAVIGATION BAR -->
+<div style="padding:10px; background:#f4f4f4; border-bottom:1px solid #ddd; margin-bottom:20px;">
+  <a href="admin.html" style="text-decoration:none; font-weight:bold; color:#333;"> System Metrics</a> | 
+  <a href="marketplace.html" style="text-decoration:none; font-weight:bold; color:#333;"> Marketplace</a>
+</div>
+
+<div id="list">Gathering active system bookings...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDk359LPnFT_Jh7i6LdL35rS5Gd7inuHc",
+  authDomain: "adonwheels-be097.firebaseapp.com",
+  projectId: "adonwheels-be097",
+  storageBucket: "adonwheels-be097.appspot.com",
+  messagingSenderId: "90516470834",
+  appId: "1:90516470834:web:5f7b5d769605199bd4d02b" // Standardized unified App ID
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// AUTH CHECK - Synchronized with core application state keys
+const user = localStorage.getItem("loggedInUser");
+if (!user) {
+  alert("Unauthorized. Returning to terminal login portal.");
+  window.location.href = "login.html";
+}
+
+async function loadBookings() {
+  const listContainer = document.getElementById("list");
+  
+  try {
+    const snap = await getDocs(collection(db, "bookings"));
+    listContainer.innerHTML = "";
+
+    if (snap.empty) {
+      listContainer.innerHTML = "<p>No campaign bookings exist in the global database ledger.</p>";
+      return;
+    }
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.border = "1px solid #ccc";
+      div.style.padding = "15px";
+      div.style.margin = "12px 0";
+      div.style.borderRadius = "6px";
+
+      // Color-code statuses dynamically to simplify admin processing
+      let statusColor = "#ffa500"; // Orange for pending
+      if (data.status === "approved") statusColor = "#28a745"; // Green
+      if (data.status === "rejected") statusColor = "#dc3545"; // Red
+
+      div.innerHTML = `
+        <div style="float:right; background:${statusColor}; color:#fff; padding:3px 8px; border-radius:3px; font-size:12px; font-weight:bold; text-transform:uppercase;">
+          ${data.status || 'pending'}
+        </div>
+        <strong>Advertiser Phone:</strong> ${data.userPhone || 'N/A'}<br>
+        <strong>Driver Phone:</strong> ${data.ownerPhone || 'N/A'}<br>
+        <strong>Reference UTR:</strong> <span style="font-family:monospace; background:#eee; padding:2px 5px; border-radius:3px; font-weight:bold;">${data.transactionRef || 'NO REF CAPTURED'}</span><br>
+        <small style="color:#777;">Submitted on: ${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Unknown Date'}</small>
+        
+        <br><br>
+        <!-- Interactive Controls -->
+        <button onclick="approveBooking('${docSnap.id}')" style="background:#28a745; color:#fff; border:0; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold; margin-right:5px;">Approve Campaign</button>
+        <button onclick="rejectBooking('${docSnap.id}')" style="background:#dc3545; color:#fff; border:0; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">Reject Request</button>
+      `;
+
+      listContainer.appendChild(div);
+    });
+  } catch (error) {
+    listContainer.innerHTML = `<p style="color:red;">Database extraction error: ${error.message}</p>`;
+  }
+}
+
+// Global scope registration for the action mechanisms
+window.approveBooking = async function(id) {
+  try {
+    await updateDoc(doc(db, "bookings", id), { status: "approved" });
+    alert(" Campaign status updated to LIVE / APPROVED.");
+    loadBookings();
+  } catch (err) {
+    alert("Error executing approval action: " + err.message);
+  }
+};
+
+window.rejectBooking = async function(id) {
+  if (confirm("Reject this advertiser advertisement application request?")) {
+    try {
+      await updateDoc(doc(db, "bookings", id), { status: "rejected" });
+      alert(" Campaign status updated to REJECTED.");
+      loadBookings();
+    } catch (err) {
+      alert("Error executing rejection action: " + err.message);
+    }
+  }
+};
+
+// Initial run
+loadBookings();
+</script>
+
+</body>
+</html>

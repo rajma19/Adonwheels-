@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Car</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>🚘 Register Your Car</h2>
+
+  <form id="carForm">
+    <label>
+      👤 Owner Name:
+      <input type="text" name="owner" placeholder="Your name" required>
+    </label>
+    <br><br>
+
+    <label>
+      🚗 Car Model:
+      <input type="text" name="model" placeholder="E.g. Swift, Baleno" required>
+    </label>
+    <br><br>
+
+    <label>
+      🔢 Registration No.:
+      <input type="text" name="regno" placeholder="AB12CD3456" required>
+    </label>
+    <br><br>
+
+    <label>
+      📍 City:
+      <input type="text" name="city" placeholder="Enter city" required>
+    </label>
+    <br><br>
+
+    <label>
+      🛣️ Kilometers Per Day:
+      <input type="number" name="kmPerDay" placeholder="e.g. 50" required>
+    </label>
+    <br><br>
+
+    <label>
+      💰 Price per KM:
+      <input type="number" name="pricePerKm" placeholder="Enter price per KM" required>
+    </label>
+    <br><br>
+
+    <label>
+      📷 Upload Car Image:
+      <input type="file" accept="image/*" required>
+    </label>
+    <br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <br>
+  <a href="index.html">🔙 Back to Home</a>
+
+  <script src="main.js"></script>
+</body>
+</html>

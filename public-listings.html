@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Car Ads & Rentals</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .filters {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .filters input, .filters button {
+      margin: 8px 4px;
+      padding: 8px;
+    }
+
+    .car-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      padding: 15px;
+      overflow: hidden;
+    }
+
+    .car-card img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .car-card h3 {
+      margin: 0 0 5px;
+    }
+
+    .car-info {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .city-tag {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .book-button {
+      margin-top: 10px;
+      display: inline-block;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .book-button:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h2>🚗 Car Ads & Rentals</h2>
+
+  <!-- Filters -->
+  <div class="filters">
+    <label>
+      🔍 City:
+      <input type="text" id="filterCity" placeholder="Enter city name">
+    </label>
+    <label>
+      🛣️ Min KMs/day:
+      <input type="number" id="filterKm" placeholder="0" min="0">
+    </label>
+    <button onclick="applyFilter()">Apply Filter</button>
+    <button onclick="resetFilter()">Reset</button>
+  </div>
+
+  <!-- Listing Area -->
+  <div id="carList"></div>
+
+  <a href="index.html">🔙 Back to Home</a>
+
+  <script>
+    function displayCars(cars) {
+      const carList = document.getElementById("carList");
+      carList.innerHTML = "";
+
+      if (cars.length === 0) {
+        carList.innerHTML = "<p>No matching cars found.</p>";
+        return;
+      }
+
+      cars.forEach((car) => {
+        const div = document.createElement("div");
+        div.className = "car-card";
+
+        div.innerHTML = `
+          <img src="${car.image}" alt="${car.model}" />
+          <h3>${car.model} ${car.verified ? '<span style="color:green;">✅ Verified</span>' : ''}</h3>
+          <div class="car-info">
+            <strong>Owner:</strong> ${car.owner}<br>
+            <strong>Reg. No.:</strong> ${car.regno}<br>
+            <strong>KMs/day:</strong> ${car.kmPerDay} km<br>
+            <strong>Price:</strong> ₹${car.pricePerKm} / km<br>
+            <div class="city-tag">${car.city}</div><br>
+            <a class="book-button" href="https://wa.me/91${car.ownerPhone}" target="_blank">📞 Contact on WhatsApp</a>
+          </div>
+        `;
+
+        carList.appendChild(div);
+      });
+    }
+
+    function loadCars() {
+      const allCars = JSON.parse(localStorage.getItem("cars")) || [];
+      displayCars(allCars);
+    }
+
+    function applyFilter() {
+      const allCars = JSON.parse(localStorage.getItem("cars")) || [];
+
+      const cityInput = document.getElementById("filterCity").value.toLowerCase().trim();
+      const minKm = parseInt(document.getElementById("filterKm").value) || 0;
+
+      const filtered = allCars.filter(car => {
+        const matchesCity = car.city.toLowerCase().includes(cityInput);
+        const matchesKm = parseInt(car.kmPerDay) >= minKm;
+        return matchesCity && matchesKm;
+      });
+
+      displayCars(filtered);
+    }
+
+    function resetFilter() {
+      document.getElementById("filterCity").value = "";
+      document.getElementById("filterKm").value = "";
+      loadCars();
+    }
+
+    document.addEventListener("DOMContentLoaded", loadCars);
+  </script>
+</body>
+</html>

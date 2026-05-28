@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Ad Slot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2> Book Advertisement Slot</h2>
+
+<div id="carInfo">Loading vehicle details...</div>
+
+<hr style="border:0; border-top: 1px dashed #ccc; margin: 20px 0;">
+
+<h3> Payment Gateway</h3>
+<p>Transfer the campaign booking amount directly via UPI:</p>
+<p style="font-size:18px; font-weight:bold; background:#eef; display:inline-block; padding:5px 10px; border-radius:4px;">
+  adonwheels@upi
+</p>
+
+<!-- Interactive Payment Intent Button for Mobile Users -->
+<div style="margin: 15px 0;" id="mobilePayWrapper"></div>
+
+<!-- TRANSACTION VERIFICATION WALL -->
+<div style="margin: 20px 0; max-width: 400px;">
+  <label style="display:block; font-weight:bold; margin-bottom:5px;">
+     Enter UPI Transaction ID / UTR Number:
+  </label>
+  <input type="text" id="transactionId" placeholder="e.g. 349823091234" required style="width:100%; padding:8px; box-sizing:border-box;">
+  <small style="color:#666;">Provide the 12-digit transaction ID from your payment app receipt to clear audit validation.</small>
+</div>
+
+<button onclick="confirmPayment()" id="payBtn" style="padding:10px 20px; font-weight:bold; cursor:pointer;">
+   I Have Paid & Submitted Request
+</button>
+
+<br><br>
+<a href="marketplace.html"> Return to Marketplace</a>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDk359LPnFT_Jh7i6LdL35rS5Gd7inuHc",
+  authDomain: "adonwheels-be097.firebaseapp.com",
+  projectId: "adonwheels-be097",
+  storageBucket: "adonwheels-be097.appspot.com",
+  messagingSenderId: "90516470834",
+  appId: "1:90516470834:web:5f7b5d769605199bd4d02b" // Standardized unified App ID
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const carId = params.get("id");
+
+if (!carId) {
+  alert("Invalid booking link.");
+  window.location.href = "marketplace.html";
+}
+
+let carData = null;
+
+// LOAD CAR PROFILE DETAILS
+async function loadCar() {
+  try {
+    const snap = await getDoc(doc(db, "cars", carId));
+
+    if (snap.exists()) {
+      carData = snap.data();
+      
+      const carImg = carData.image 
+        ? `<img src="${carData.image}" width="200" style="display:block; margin-top:10px; border-radius:4px; max-height:150px; object-fit:cover;">`
+        : `<div style="width:200px; height:120px; background:#e0e0e0; display:flex; align-items:center; justify-content:center; color:#666; font-size:13px; margin-top:10px; border-radius:4px;">No Image Provided</div>`;
+
+      document.getElementById("carInfo").innerHTML = `
+        <div style="background:#f9f9f9; padding:15px; border-radius:6px; border:1px solid #eee;">
+          <h3 style="margin-top:0;"> Host: ${carData.owner || 'Verified Driver'}</h3>
+          <p> <strong>Vehicle Model:</strong> ${carData.model || 'N/A'}</p>
+          <p> <strong>Base City:</strong> ${carData.city || 'N/A'}</p>
+          <p> <strong>Base Campaign Rate:</strong> $${carData.pricePerKm || '0'}/KM</p>
+          ${carImg}
+        </div>
+      `;
+
+      // Render a quick smartphone launch link
+      // Constructs a clean upi:// pay intent string that instantly launches phone apps (GPay, PhonePe, etc.)
+      const upiUrl = `upi://pay?pa=adonwheels@upi&pn=AdOnWheels&tn=Booking_Ref_${carId}`;
+      document.getElementById("mobilePayWrapper").innerHTML = `
+        <a href="${upiUrl}" style="display:inline-block; background:#007bff; color:#fff; padding:8px 14px; text-decoration:none; border-radius:4px; font-weight:bold; font-size:14px;">
+           Open UPI App Directly
+        </a>
+      `;
+
+    } else {
+      alert("This vehicle registry could not be located.");
+      window.location.href = "marketplace.html";
+    }
+  } catch (error) {
+    document.getElementById("carInfo").innerHTML = `<p style="color:red;">Error loading checkout details: ${error.message}</p>`;
+  }
+}
+
+// PAYMENT ACTION CONFIRMATION
+window.confirmPayment = async function () {
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  const txInput = document.getElementById("transactionId");
+  const txId = txInput.value.trim();
+  const payBtn = document.getElementById("payBtn");
+
+  if (!user) {
+    alert("Session expired. Please log in first.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (!txId) {
+    alert("Please enter your 12-digit UPI Transaction ID or reference code to submit.");
+    txInput.focus();
+    return;
+  }
+
+  // Lockdown interface button state to stop multi-click fraud
+  payBtn.disabled = true;
+  payBtn.innerText = "Transmitting Verification...";
+
+  try {
+    // Append structured reference records straight to database ledger
+    await addDoc(collection(db, "bookings"), {
+      carId: carId,
+      ownerPhone: carData.ownerPhone,
+      userPhone: user.phone,
+      transactionRef: txId, // Added key audit data capture field
+      status: "pending",
+      createdAt: new Date()
+    });
+
+    alert(" Booking Request transmitted successfully! The admin team is validating your ledger entry.");
+    window.location.href = "marketplace.html";
+  } catch (error) {
+    alert(" Error recording booking: " + error.message);
+    payBtn.disabled = false;
+    payBtn.innerText = " I Have Paid & Submitted Request";
+  }
+};
+
+loadCar();
+</script>
+
+</body>
+</html>

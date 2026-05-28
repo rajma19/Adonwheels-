@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AdOnWheels - Home</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body style="font-family: sans-serif; padding: 20px; background: #f1f1f1; text-align: center;">
+
+  <h2>🚗 Welcome to AdOnWheels</h2>
+  <p id="welcomeMessage">Checking login...</p>
+
+  <div style="margin-top: 30px;">
+    <a href="register-car.html"><button>➕ Register Your Car</button></a><br><br>
+    <a href="view-cars.html"><button>📋 View My Cars</button></a><br><br>
+    <a href="signup.html"><button>📝 Create Account</button></a><br><br>
+    <a href="login.html"><button>🔐 Login</button></a><br><br>
+    <button onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (user) {
+      document.getElementById("welcomeMessage").innerText = `👋 Welcome, ${user.name}!`;
+    } else {
+      document.getElementById("welcomeMessage").innerText = "👤 You are not logged in.";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

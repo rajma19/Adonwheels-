@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Notifications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2> Notifications Inbox</h2>
+
+<!-- NAVIGATION TRUNK MAP -->
+<div style="padding:10px; background:#f4f4f4; border-bottom:1px solid #ddd; margin-bottom:20px;">
+  <a href="marketplace.html" style="text-decoration:none; font-weight:bold; color:#333;"> Marketplace</a> | 
+  <a href="dashboard.html" style="text-decoration:none; font-weight:bold; color:#333;"> Fleet Dashboard</a>
+</div>
+
+<div id="list">Connecting to live alert stream...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  query, 
+  where, 
+  onSnapshot,
+  orderBy 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDk359LPnFT_Jh7i6LdL35rS5Gd7inuHc",
+  authDomain: "adonwheels-be097.firebaseapp.com",
+  projectId: "adonwheels-be097",
+  storageBucket: "adonwheels-be097.appspot.com",
+  messagingSenderId: "90516470834",
+  appId: "1:90516470834:web:5f7b5d769605199bd4d02b" // Standardized unified App ID
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* CRITICAL ACCESS SECURITY WALL */
+const user = JSON.parse(localStorage.getItem("loggedInUser"));
+if (!user || !user.phone) {
+  alert("Session missing. Please login to inspect your updates inbox.");
+  window.location.href = "login.html";
+}
+
+function listenToNotifications() {
+  const listContainer = document.getElementById("list");
+
+  // SECURITY FIX: Target alerts specifically to the logged-in user's phone record
+  // Added an optional timestamp sort order rule if your background processes log alert creation dates
+  const q = query(
+    collection(db, "notifications"),
+    where("targetPhone", "==", user.phone)
+  );
+
+  // UPGRADE: Real-time dynamic updates streaming engine socket connection
+  onSnapshot(q, (snapshot) => {
+    listContainer.innerHTML = "";
+
+    if (snapshot.empty) {
+      listContainer.innerHTML = `
+        <div style="text-align:center; padding: 30px; color: #777;">
+          <p style="font-size: 48px; margin: 0;">Inbox Clean! </p>
+          <p>You have no pending notification items at this time.</p>
+        </div>
+      `;
+      return;
+    }
+
+    snapshot.forEach((docSnap) => {
+      const alertItem = docSnap.data();
+      const div = document.createElement("div");
+
+      div.style.border = "1px solid #e0e0e0";
+      div.style.margin = "12px 0";
+      div.style.padding = "15px";
+      div.style.borderRadius = "6px";
+      div.style.background = "#fff";
+      div.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)";
+
+      // Style priority variations dynamically based on the alert subject group
+      let typeLabelColor = "#555";
+      if (alertItem.type === "Approval" || alertItem.type === "Verified") typeLabelColor = "#28a745";
+      if (alertItem.type === "Alert" || alertItem.type === "Rejected") typeLabelColor = "#dc3545";
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f1f1; padding-bottom:6px; margin-bottom:8px;">
+          <span style="font-weight:bold; color:${typeLabelColor}; text-transform:uppercase; font-size:13px;">
+             ${alertItem.type || 'SYSTEM NOTIFICATION'}
+          </span>
+          <span style="font-size:12px; color:#aaa;">
+            ${alertItem.status ? `Status: <strong>${alertItem.status}</strong>` : ''}
+          </span>
+        </div>
+        <p style="margin:0; font-size:15px; color:#333; line-height:1.4;">${alertItem.message || 'No notification message payload supplied.'}</p>
+      `;
+
+      listContainer.appendChild(div);
+    });
+  }, (error) => {
+    listContainer.innerHTML = `<p style="color:red; font-weight:bold;"> Real-time streaming connection drop: ${error.message}</p>`;
+  });
+}
+
+// Initializing live system channel
+listenToNotifications();
+</script>
+
+</body>
+</html>

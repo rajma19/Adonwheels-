@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AdOnWheels - Home</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>AdOnWheels | Welcome</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body style="font-family: sans-serif; padding: 20px; background: #f1f1f1; text-align: center;">
+<body>
 
-  <h2>🚗 Welcome to AdOnWheels</h2>
-  <p id="welcomeMessage">Checking login...</p>
+<div style="max-width: 500px; margin: 50px auto; text-align: center;">
+  <h1 style="font-size: 36px; margin-bottom: 10px;">🚗 AdOnWheels</h1>
+  <p style="color: #666; font-size: 18px; margin-bottom: 30px;">Turn your daily drive into passive income, or launch local mobile billboard campaigns instantly.</p>
 
-  <div style="margin-top: 30px;">
-    <a href="register-car.html"><button>➕ Register Your Car</button></a><br><br>
-    <a href="view-cars.html"><button>📋 View My Cars</button></a><br><br>
-    <a href="signup.html"><button>📝 Create Account</button></a><br><br>
-    <a href="login.html"><button>🔐 Login</button></a><br><br>
-    <button onclick="logout()">🚪 Logout</button>
+  <div class="card" style="padding: 30px;">
+    <h3>Get Started</h3>
+    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Access your driving dashboard or browse our active vehicle advertising fleet layout.</p>
+    
+    <button onclick="enterApp()" style="width: 100%; padding: 12px; font-size: 16px;">
+      🚀 Enter Platform Portal
+    </button>
   </div>
+  
+  <small style="color: #999;">© 2026 AdOnWheels Operations Network</small>
+</div>
 
-  <script>
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+<script>
+function enterApp() {
+  if (localStorage.getItem("loggedInUser")) {
+    window.location.href = "marketplace.html";
+  } else {
+    window.location.href = "login.html";
+  }
+}
+</script>
 
-    if (user) {
-      document.getElementById("welcomeMessage").innerText = `👋 Welcome, ${user.name}!`;
-    } else {
-      document.getElementById("welcomeMessage").innerText = "👤 You are not logged in.";
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      alert("You have been logged out.");
-      window.location.href = "login.html";
-    }
-  </script>
 </body>
 </html>

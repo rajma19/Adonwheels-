@@ -27,8 +27,9 @@
     .status-Available { background-color: #28a745; }
     .status-Booked { background-color: #dc3545; }
 
-    .action-button { background-color: #007bff; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; display: inline-block; font-weight: bold; font-size: 14px; margin-top: 15px; width: 100%; text-align: center; border: none; cursor: pointer; }
+    .action-button { background-color: #007bff; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; display: inline-block; font-weight: bold; font-size: 14px; margin-top: 15px; width: 100%; text-align: center; border: none; cursor: pointer; transition: background 0.2s; }
     .action-button:hover { background-color: #0056b3; }
+    .action-button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -45,17 +46,19 @@
   </div>
   
   <div id="marketplace-grid" class="car-grid">
-    </div>
+    <!-- Dynamic car cards list -->
+  </div>
 
-  <div style="margin-top: 60px; text-align: center;">
-    <a href="index.html" style="padding: 12px 25px; text-decoration: none; display: inline-block; font-weight: bold; color: #fff; background-color: #6c757d; border-radius: 6px; width: 100%; max-width: 300px;">🔙 Back to Portal</a>
+  <div style="margin-top: 60px; text-align: center; display: flex; justify-content: center; gap: 15px;">
+    <a href="dashboard.html" style="padding: 12px 25px; text-decoration: none; display: inline-block; font-weight: bold; color: #fff; background-color: #007bff; border-radius: 6px; width: 100%; max-width: 200px;">📊 Back to Dashboard</a>
+    <a href="index.html" style="padding: 12px 25px; text-decoration: none; display: inline-block; font-weight: bold; color: #fff; background-color: #6c757d; border-radius: 6px; width: 100%; max-width: 200px;">🔙 Portal Home</a>
   </div>
 
 </div>
 
 <script>
-  // Fresh and guaranteed live image URLs from Unsplash Source
-  const finalFleetData = [
+  // Initial Fleet Data Setup in LocalStorage if not exists
+  const defaultFleet = [
     {
       "id": "ADW01",
       "name": "Tesla Model 3 - Black Edition",
@@ -70,7 +73,7 @@
       "driverName": "Rahul S.",
       "location": "Delhi NCR / Central Delhi",
       "image": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500",
-      "status": "Booked"
+      "status": "Available"
     },
     {
       "id": "ADW03",
@@ -90,15 +93,22 @@
     }
   ];
 
-  function renderMarketplaceFinalVersion() {
+  // Load from localStorage or set defaults
+  if (!localStorage.getItem("fleetData")) {
+    localStorage.setItem("fleetData", JSON.stringify(defaultFleet));
+  }
+
+  function renderMarketplace() {
     const grid = document.getElementById("marketplace-grid");
     const statusDisplay = document.getElementById("status-display");
+    const fleetData = JSON.parse(localStorage.getItem("fleetData"));
 
-    if (finalFleetData && finalFleetData.length > 0) {
-      statusDisplay.innerText = `🟢 AdOnWheels Active Fleet: ${finalFleetData.length} cars configured. All images linked successfully.`;
+    if (fleetData && fleetData.length > 0) {
+      statusDisplay.innerText = `🟢 AdOnWheels Active Fleet: ${fleetData.length} cars configured. Real booking engine active.`;
       grid.innerHTML = ""; 
 
-      finalFleetData.forEach(car => {
+      fleetData.forEach(car => {
+        const isBooked = car.status === "Booked";
         grid.innerHTML += `
           <div class="car-card">
             <span class="status-badge status-${car.status}">${car.status}</span>
@@ -108,7 +118,11 @@
               <p><strong>Fleet ID:</strong> ${car.id}</p>
               <p><strong>Driver:</strong> ${car.driverName}</p>
               <p><strong>Primary Region:</strong> ${car.location}</p>
-              <button class="action-button">Request Booking</button>
+              <button class="action-button" 
+                      onclick="bookCar('${car.id}')" 
+                      ${isBooked ? 'disabled' : ''}>
+                ${isBooked ? 'Already Booked' : 'Request Booking'}
+              </button>
             </div>
           </div>
         `;
@@ -116,8 +130,37 @@
     }
   }
 
-  renderMarketplaceFinalVersion();
+  // Real Booking Action Logic
+  window.bookCar = function(carId) {
+    let fleetData = JSON.parse(localStorage.getItem("fleetData"));
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || { name: "Guest User" };
+    
+    // Find the car and update status
+    const carIndex = fleetData.findIndex(car => car.id === carId);
+    if (carIndex !== -1 && fleetData[carIndex].status === "Available") {
+      fleetData[carIndex].status = "Booked";
+      localStorage.setItem("fleetData", JSON.stringify(fleetData));
+
+      // Save Booking details for bookings.html or admin dashboard
+      let currentBookings = JSON.parse(localStorage.getItem("userBookings")) || [];
+      currentBookings.push({
+        bookingId: "BK-" + Math.floor(1000 + Math.random() * 9000),
+        carName: fleetData[carIndex].name,
+        carId: carId,
+        userName: loggedInUser.name,
+        date: new Date().toLocaleDateString()
+      });
+      localStorage.setItem("userBookings", JSON.stringify(currentBookings));
+
+      alert(`🎉 Success! Booking requested for ${fleetData[carIndex].name}. This car is now reserved.`);
+      renderMarketplace(); // Instant UI refresh
+    }
+  };
+
+  // Run on load
+  renderMarketplace();
 </script>
 
 </body>
-</html>
+  </html>
+  

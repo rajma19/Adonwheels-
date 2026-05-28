@@ -8,66 +8,70 @@
 </head>
 <body style="font-family: sans-serif; background: #f1f1f1; padding: 20px;">
 
-<div class="card" style="max-width: 400px; margin: 50px auto; padding: 30px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center;">
+<div class="card" style="max-width: 400px; margin: 40px auto; padding: 30px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;">
   
-  <!-- LOGO / HEADER -->
+  <!-- LOGO -->
   <h2 style="font-size: 28px; margin-bottom: 20px;">🚗 AdOnWheels</h2>
 
-  <!-- LOGIN FORM -->
+  <!-- LOGIN SECTION -->
   <div id="loginSection">
     <h3 style="margin-bottom: 15px; color: #333;">🔐 Login to Your Account</h3>
     <form id="loginForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Mobile Number</label>
-        <input type="tel" id="phone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+        <input type="tel" id="phone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Password</label>
-        <input type="password" id="password" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+        <input type="password" id="password" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
-      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px;">Login</button>
+      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Login</button>
     </form>
-    <p style="margin-top: 20px; font-size: 14px;">
-      Don’t have an account? <a href="#" onclick="toggleSections(false)" style="color: #007bff; text-decoration: none; font-weight: bold;">Sign Up</a>
-    </p>
+    
+    <div style="margin-top: 25px; font-size: 15px; color: #333; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      <span>Don’t have an account?</span>
+      <a href="#" onclick="toggleSections(false)" style="background-color: #007bff; color: white !important; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Sign Up</a>
+    </div>
   </div>
 
-  <!-- SIGNUP FORM (Hidden by default) -->
+  <!-- SIGNUP SECTION -->
   <div id="signupSection" style="display: none;">
     <h3 style="margin-bottom: 15px; color: #333;">📝 Create New Account</h3>
     <form id="signupForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Full Name</label>
-        <input type="text" id="newName" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+        <input type="text" id="newName" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Mobile Number</label>
-        <input type="tel" id="newPhone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+        <input type="tel" id="newPhone" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
       <div>
         <label style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Create Password</label>
-        <input type="password" id="newPassword" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px;">
+        <input type="password" id="newPassword" required style="width: 100%; padding: 10px; box-sizing: border-box; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;">
       </div>
 
-      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; background-color: #28a745;">Register</button>
+      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; background-color: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Register</button>
     </form>
-    <p style="margin-top: 20px; font-size: 14px;">
-      Already have an account? <a href="#" onclick="toggleSections(true)" style="color: #007bff; text-decoration: none; font-weight: bold;">Login</a>
-    </p>
+    
+    <div style="margin-top: 25px; font-size: 15px; color: #333; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      <span>Already have an account?</span>
+      <a href="#" onclick="toggleSections(true)" style="background-color: #007bff; color: white !important; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Login</a>
+    </div>
   </div>
 
-  <p id="status" style="color: red; font-weight: bold; margin-top: 15px; min-height: 20px;"></p>
+  <p id="status" style="color: red; font-weight: bold; margin-top: 15px; min-height: 20px; font-size: 14px;"></p>
 
-  <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-  <a href="index.html" style="color: #666; text-decoration: none; font-size: 14px;">🔙 Back to Home</a>
+  <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+  
+  <a href="index.html" style="background-color: #6c757d; color: white !important; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-block; font-weight: bold; width: 80%;">🔙 Back to Home</a>
 </div>
 
 <script>
-  // Toggle between Login and Signup forms smoothly
   function toggleSections(showLogin) {
     document.getElementById("status").innerText = "";
     if (showLogin) {
@@ -79,7 +83,7 @@
     }
   }
 
-  // LOGIN PROCESS
+  // LOGIN
   document.getElementById("loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
     const phone = document.getElementById("phone").value.trim();
@@ -94,7 +98,7 @@
       status.style.color = "green";
       status.innerText = "✅ Login successful!";
       setTimeout(() => {
-        window.location.href = "marketplace.html"; // Login ke baad seedhe marketplace bhejenge
+        window.location.href = "marketplace.html";
       }, 1000);
     } else {
       status.style.color = "red";
@@ -102,7 +106,7 @@
     }
   });
 
-  // SIGNUP PROCESS
+  // SIGNUP
   document.getElementById("signupForm").addEventListener("submit", function (e) {
     e.preventDefault();
     const name = document.getElementById("newName").value.trim();
@@ -112,24 +116,20 @@
 
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Check if user already exists
     if (users.some(user => user.phone === phone)) {
       status.style.color = "red";
       status.innerText = "❌ This mobile number is already registered.";
       return;
     }
 
-    // Save new user
     users.push({ name: name, phone: phone, password: password });
     localStorage.setItem("users", JSON.stringify(users));
 
     status.style.color = "green";
     status.innerText = "✅ Registration successful! Please Login.";
     
-    // Clear signup form fields
     document.getElementById("signupForm").reset();
     
-    // Switch to login form after 1.5 seconds
     setTimeout(() => {
       toggleSections(true);
     }, 1500);
@@ -137,4 +137,5 @@
 </script>
 
 </body>
-</html>
+          </html>
+    

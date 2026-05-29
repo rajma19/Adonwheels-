@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <title>Admin Dashboard</title>
 </head>
 <body>
     <h2>Live Bookings</h2>
-    <table border="1">
+    <table>
         <thead>
             <tr>
-                <th>Car Name</th>
+                <th>Car</th>
                 <th>User</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -22,42 +23,29 @@
         import { db } from './firebase-config.js';
         import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Status update karne ka function
         window.updateStatus = async (id, newStatus) => {
-            try {
-                const docRef = doc(db, "bookings", id);
-                await updateDoc(docRef, { status: newStatus });
-                alert("Status updated to " + newStatus);
-                fetchBookings(); // Table refresh karne ke liye
-            } catch (e) {
-                alert("Error updating status: " + e.message);
-            }
+            await updateDoc(doc(db, "bookings", id), { status: newStatus });
+            alert("Status updated!");
+            location.reload();
         };
 
         async function fetchBookings() {
             const querySnapshot = await getDocs(collection(db, "bookings"));
             const tbody = document.getElementById("tableBody");
-            tbody.innerHTML = ""; 
-            
-            querySnapshot.forEach((docSnap) => {
-                const b = docSnap.data();
-                const id = docSnap.id;
-                
-                // Sirf wahi rows dikhayega jisme carName hai (undefined hata dega)
+            querySnapshot.forEach((d) => {
+                const b = d.data();
                 if (b.carName) {
                     tbody.innerHTML += `<tr>
                         <td>${b.carName}</td>
                         <td>${b.userName}</td>
                         <td>${b.status}</td>
                         <td>
-                            <button onclick="updateStatus('${id}', 'Approved')">Approve</button>
-                            <button onclick="updateStatus('${id}', 'Rejected')">Reject</button>
+                            <button onclick="updateStatus('${d.id}', 'Approved')">Approve</button>
                         </td>
                     </tr>`;
                 }
             });
         }
-        
         fetchBookings();
     </script>
 </body>

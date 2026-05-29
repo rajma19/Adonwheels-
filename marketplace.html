@@ -4,163 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AdOnWheels Fleet Marketplace</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body { background-color: #f4f7f6; font-family: 'Helvetica Neue', sans-serif; padding: 20px; }
     .marketplace-container { max-width: 1200px; margin: 40px auto; padding: 20px; text-align: center; }
-    .page-header { margin-bottom: 50px; }
-    .page-title { font-size: 36px; margin: 0 0 10px; color: #333; }
-    .page-subtitle { color: #666; font-size: 18px; margin-top: 0; }
-    
-    #fleet-summary-card { padding: 20px; background-color: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 40px; display: inline-block; width: 100%; max-width: 800px; box-sizing: border-box; }
-    #status-display { color: #28a745; font-weight: bold; font-size: 17px; margin: 0; text-align: center; }
-    
     .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 40px; text-align: left; }
-    .car-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow: 0.2s; position: relative; display: flex; flex-direction: column; }
-    .car-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
-    .car-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #eee; background-color: #eaeaea; }
-    .car-details { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .car-details h4 { margin: 0 0 8px; font-size: 19px; color: #222; }
-    .car-details p { color: #666; font-size: 15px; margin: 4px 0; }
-    
-    .status-badge { position: absolute; top: 10px; right: 10px; padding: 5px 10px; border-radius: 5px; color: white; font-size: 12px; font-weight: bold; }
-    .status-Available { background-color: #28a745; }
-    .status-Booked { background-color: #dc3545; }
-
-    .action-button { background-color: #007bff; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; display: inline-block; font-weight: bold; font-size: 14px; margin-top: 15px; width: 100%; text-align: center; border: none; cursor: pointer; transition: background 0.2s; }
-    .action-button:hover { background-color: #0056b3; }
-    .action-button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+    .car-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 15px; }
+    .car-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+    .action-button { background-color: #007bff; color: white; padding: 10px; border: none; border-radius: 6px; width: 100%; cursor: pointer; margin-top: 15px; }
   </style>
 </head>
 <body>
 
 <div class="marketplace-container">
-  
-  <div class="page-header">
-    <h1 class="page-title">🚗 AdOnWheels Fleet</h1>
-    <p class="page-subtitle">Browse and select your next mobile advertising platform.</p>
-  </div>
-
-  <div id="fleet-summary-card">
-    <p id="status-display">Marketplace Initialization Complete.</p>
-  </div>
-  
+  <h1>🚗 AdOnWheels Fleet</h1>
   <div id="marketplace-grid" class="car-grid">
-    <!-- Dynamic car cards list -->
-  </div>
-
-  <div style="margin-top: 60px; text-align: center; display: flex; justify-content: center; gap: 15px;">
-    <a href="dashboard.html" style="padding: 12px 25px; text-decoration: none; display: inline-block; font-weight: bold; color: #fff; background-color: #007bff; border-radius: 6px; width: 100%; max-width: 200px;">📊 Back to Dashboard</a>
-    <a href="index.html" style="padding: 12px 25px; text-decoration: none; display: inline-block; font-weight: bold; color: #fff; background-color: #6c757d; border-radius: 6px; width: 100%; max-width: 200px;">🔙 Portal Home</a>
-  </div>
-
+    </div>
 </div>
 
-<script>
-  // Initial Fleet Data Setup in LocalStorage if not exists
-  const defaultFleet = [
-    {
-      "id": "ADW01",
-      "name": "Tesla Model 3 - Black Edition",
-      "driverName": "Amit R.",
-      "location": "Mumbai CBD & Suburbs",
-      "image": "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500",
-      "status": "Available"
-    },
-    {
-      "id": "ADW02",
-      "name": "Toyota Camry Hybrid",
-      "driverName": "Rahul S.",
-      "location": "Delhi NCR / Central Delhi",
-      "image": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500",
-      "status": "Available"
-    },
-    {
-      "id": "ADW03",
-      "name": "Hyundai Creta - Silver Tech",
-      "driverName": "Vikram P.",
-      "location": "Bangalore / Tech Parks",
-      "image": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500",
-      "status": "Available"
-    },
-    {
-      "id": "ADW04",
-      "name": "Jeep Compass - Off-Road Fleet",
-      "driverName": "Suresh K.",
-      "location": "Pune / Expressway Zone",
-      "image": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500",
-      "status": "Available"
-    }
+<script type="module">
+  import { db } from './firebase-config.js';
+  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // Mock data (Professional apps mein ise bhi Database se fetch karte hain)
+  const fleet = [
+    { id: "ADW01", name: "Tesla Model 3", location: "Mumbai" },
+    { id: "ADW02", name: "Toyota Camry", location: "Delhi" }
   ];
 
-  // Load from localStorage or set defaults
-  if (!localStorage.getItem("fleetData")) {
-    localStorage.setItem("fleetData", JSON.stringify(defaultFleet));
-  }
+  const grid = document.getElementById("marketplace-grid");
+  
+  fleet.forEach(car => {
+    grid.innerHTML += `
+      <div class="car-card">
+        <h3>${car.name}</h3>
+        <p>Location: ${car.location}</p>
+        <button class="action-button" onclick="window.bookCar('${car.name}')">Book Now</button>
+      </div>
+    `;
+  });
 
-  function renderMarketplace() {
-    const grid = document.getElementById("marketplace-grid");
-    const statusDisplay = document.getElementById("status-display");
-    const fleetData = JSON.parse(localStorage.getItem("fleetData"));
-
-    if (fleetData && fleetData.length > 0) {
-      statusDisplay.innerText = `🟢 AdOnWheels Active Fleet: ${fleetData.length} cars configured. Real booking engine active.`;
-      grid.innerHTML = ""; 
-
-      fleetData.forEach(car => {
-        const isBooked = car.status === "Booked";
-        grid.innerHTML += `
-          <div class="car-card">
-            <span class="status-badge status-${car.status}">${car.status}</span>
-            <img src="${car.image}" alt="${car.name}" class="car-img">
-            <div class="car-details">
-              <h4>${car.name}</h4>
-              <p><strong>Fleet ID:</strong> ${car.id}</p>
-              <p><strong>Driver:</strong> ${car.driverName}</p>
-              <p><strong>Primary Region:</strong> ${car.location}</p>
-              <button class="action-button" 
-                      onclick="bookCar('${car.id}')" 
-                      ${isBooked ? 'disabled' : ''}>
-                ${isBooked ? 'Already Booked' : 'Request Booking'}
-              </button>
-            </div>
-          </div>
-        `;
+  // Booking Function (Firebase Firestore Logic)
+  window.bookCar = async function(carName) {
+    try {
+      await addDoc(collection(db, "bookings"), {
+        carName: carName,
+        userName: "Guest User",
+        status: "Pending",
+        timestamp: new Date().toISOString()
       });
-    }
-  }
-
-  // Real Booking Action Logic
-  window.bookCar = function(carId) {
-    let fleetData = JSON.parse(localStorage.getItem("fleetData"));
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || { name: "Guest User" };
-    
-    // Find the car and update status
-    const carIndex = fleetData.findIndex(car => car.id === carId);
-    if (carIndex !== -1 && fleetData[carIndex].status === "Available") {
-      fleetData[carIndex].status = "Booked";
-      localStorage.setItem("fleetData", JSON.stringify(fleetData));
-
-      // Save Booking details for bookings.html or admin dashboard
-      let currentBookings = JSON.parse(localStorage.getItem("userBookings")) || [];
-      currentBookings.push({
-        bookingId: "BK-" + Math.floor(1000 + Math.random() * 9000),
-        carName: fleetData[carIndex].name,
-        carId: carId,
-        userName: loggedInUser.name,
-        date: new Date().toLocaleDateString()
-      });
-      localStorage.setItem("userBookings", JSON.stringify(currentBookings));
-
-      alert(`🎉 Success! Booking requested for ${fleetData[carIndex].name}. This car is now reserved.`);
-      renderMarketplace(); // Instant UI refresh
+      alert("Booking Successful! Data sent to Database.");
+    } catch (e) {
+      console.error("Error: ", e);
+      alert("Error booking car!");
     }
   };
-
-  // Run on load
-  renderMarketplace();
 </script>
 
 </body>
-  </html>
-  
+</html>

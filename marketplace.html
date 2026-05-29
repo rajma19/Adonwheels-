@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>AdOnWheels Marketplace</title>
+</head>
+<body>
+  <h1>Marketplace</h1>
+  <button onclick="bookCar('Hyundai Creta')">Request Booking</button>
+
   <script type="module">
     import { db } from './firebase-config.js';
     import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -11,7 +16,7 @@
         try {
             await addDoc(collection(db, "bookings"), {
                 carName: carName,
-                userName: "Guest User",
+                userName: "Guest",
                 status: "Pending",
                 timestamp: new Date().toISOString()
             });
@@ -21,10 +26,5 @@
         }
     }
   </script>
-</head>
-<body>
-  <h1>Marketplace</h1>
-  <!-- Tumhari cars ki list yahan hai -->
-  <button class="action-button" onclick="bookCar('Hyundai Creta')">Request Booking</button>
 </body>
 </html>

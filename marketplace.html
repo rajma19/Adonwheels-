@@ -2,63 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AdOnWheels Fleet Marketplace</title>
-  <style>
-    body { background-color: #f4f7f6; font-family: 'Helvetica Neue', sans-serif; padding: 20px; }
-    .marketplace-container { max-width: 1200px; margin: 40px auto; padding: 20px; text-align: center; }
-    .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 40px; text-align: left; }
-    .car-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 15px; }
-    .car-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
-    .action-button { background-color: #007bff; color: white; padding: 10px; border: none; border-radius: 6px; width: 100%; cursor: pointer; margin-top: 15px; }
-  </style>
+  <title>AdOnWheels Marketplace</title>
+  <script type="module">
+    // Firebase connection
+    import { db } from './firebase-config.js';
+    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Ye function button click hote hi chalega
+    window.bookCar = async function(carName) {
+        alert("Booking request sent for: " + carName);
+        try {
+            await addDoc(collection(db, "bookings"), {
+                carName: carName,
+                userName: "User",
+                status: "Pending",
+                timestamp: new Date().toISOString()
+            });
+            alert("Booking Successful!");
+        } catch (e) {
+            console.error("Error: ", e);
+            alert("Error: " + e.message);
+        }
+    }
+  </script>
 </head>
 <body>
-
-<div class="marketplace-container">
-  <h1>🚗 AdOnWheels Fleet</h1>
-  <div id="marketplace-grid" class="car-grid">
-    </div>
-</div>
-
-<script type="module">
-  import { db } from './firebase-config.js';
-  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  // Mock data (Professional apps mein ise bhi Database se fetch karte hain)
-  const fleet = [
-    { id: "ADW01", name: "Tesla Model 3", location: "Mumbai" },
-    { id: "ADW02", name: "Toyota Camry", location: "Delhi" }
-  ];
-
-  const grid = document.getElementById("marketplace-grid");
-  
-  fleet.forEach(car => {
-    grid.innerHTML += `
-      <div class="car-card">
-        <h3>${car.name}</h3>
-        <p>Location: ${car.location}</p>
-        <button class="action-button" onclick="window.bookCar('${car.name}')">Book Now</button>
-      </div>
-    `;
-  });
-
-  // Booking Function (Firebase Firestore Logic)
-  window.bookCar = async function(carName) {
-    try {
-      await addDoc(collection(db, "bookings"), {
-        carName: carName,
-        userName: "Guest User",
-        status: "Pending",
-        timestamp: new Date().toISOString()
-      });
-      alert("Booking Successful! Data sent to Database.");
-    } catch (e) {
-      console.error("Error: ", e);
-      alert("Error booking car!");
-    }
-  };
-</script>
-
+  <button class="action-button" onclick="bookCar('Hyundai Creta')">Request Booking</button>
 </body>
 </html>

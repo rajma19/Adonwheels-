@@ -4,20 +4,18 @@
   <meta charset="UTF-8" />
   <title>AdOnWheels Marketplace</title>
   <script type="module">
-    // Correct Firebase Imports
     import { db } from './firebase-config.js';
     import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     window.bookCar = async function(carName) {
-        alert("Booking request for: " + carName);
         try {
             await addDoc(collection(db, "bookings"), {
                 carName: carName,
-                userName: "User",
+                userName: "Guest User",
                 status: "Pending",
                 timestamp: new Date().toISOString()
             });
-            alert("Booking Successful! Data saved to Database.");
+            alert("🎉 Success! Booking saved to Database.");
         } catch (e) {
             alert("Error: " + e.message);
         }
@@ -25,8 +23,8 @@
   </script>
 </head>
 <body>
-
-  <button class="action-button" onclick="bookCar('Tesla Model 3')">Request Booking</button>
-
+  <h1>Marketplace</h1>
+  <!-- Tumhari cars ki list yahan hai -->
+  <button class="action-button" onclick="bookCar('Hyundai Creta')">Request Booking</button>
 </body>
 </html>

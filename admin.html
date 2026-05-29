@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard | AdOnWheels</title>
+    <title>Admin Dashboard</title>
 </head>
 <body>
     <h2>Live Bookings Data</h2>
@@ -15,17 +15,17 @@
         import { db } from './firebase-config.js';
         import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        async function loadBookings() {
+        async function fetchBookings() {
             const querySnapshot = await getDocs(collection(db, "bookings"));
             const tbody = document.getElementById("tableBody");
-            tbody.innerHTML = "";
+            tbody.innerHTML = ""; 
             
             querySnapshot.forEach((doc) => {
                 const b = doc.data();
                 tbody.innerHTML += `<tr><td>${b.carName}</td><td>${b.userName}</td><td>${b.status}</td></tr>`;
             });
         }
-        loadBookings();
+        fetchBookings();
     </script>
 </body>
 </html>
